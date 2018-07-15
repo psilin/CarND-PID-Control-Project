@@ -3,6 +3,61 @@ Self-Driving Car Engineer Nanodegree Program
 
 ---
 
+## Introduction
+
+The purpose of the project is to impelement PID-controller, that controlls car on the track and to tune its parameters 
+using simulator data.
+
+---
+
+## PID controller parameters
+
+Given a cross-track error (CTE) PID controller produces steering value that helps keep car on the track. PID controller
+consists of three components `P` (proportional), `I` (integral) and `D` (differential).
+
+`P` component is the main component of PID contoller, it has the most influense on car behaviour. It corresponds to the part
+of steering value that is proportional to cross-track error. So if car dodges to the right side of the center of the lane it
+helps car to steer left (opposite direction) and vise versa. `P` component is proportional to cross-track error so its part in steering value is
+`Kp * CTE`, where CTE is cross track error and `Kp` is a coefficient. Note that as we apply steering value with opposite sign,
+`Kp > 0` despite steering is applied in opposite direction. The same applies for `D` and `I` components. Though arguably `P` 
+component helps the most to hold car on the trajectory it is prone to overshooting and sine-like divergence of the trajectory of
+movement so other components should be applied as well.
+
+`D` component is proportional to the rate of change of CTE so its part in steering value is `Kd * dCTE`, where `dCTE = CTE(n) - CTE(n-1)`
+and `Kd` is a coefficient. `D` component is used to improve trajectory of movement acquisition. Its purpose is to mitigate overshooting
+(and as a result sine-like divergence) of `P`-controller.
+
+`I` component is proportional to the sum of CTEs so its part in steering value is `Ki * sum(CTE)`, where `sum(CTE)` is the sum of all cross track
+errors up to now and `Ki` is a coefficient. `I` component is used to mitigate bias in cross track error values so the car can move along center of the lane.
+
+---
+
+## Parameters tunning
+
+I decided to use manual tunning process as to use twiddle tunning a car should already be able to move along track in a correct manner. In my opinion
+at this point it would be hard to obtain a significant improvement in car behaviour. I took approach that was suggested on Slack channel to implement
+a `P`-controller at first that move to `PD`-controller than to `PID`-controller.
+
+My first step was to implement a `P`-controller. I needed to find a balance between car's ability to take turns and trajectory divergence. I started with
+`Kp = 1` and got a car movement that diverged in a very fast manner. Then I started to decrease `Kp` and ended up with `Kp = 0.05`. With that parameter car 
+was able to pass first two turns than its trajectory diverged. At that moment I decided to move to the next step. Resulting video of the first step is
+at `./video/P_controller.mp4` (`Kp = 0.05, Kd = 0., Ki = 0.`).
+
+Second step was to add `D` component and implement `PD`-controller. At first I tried to find a `Kd` that was smaller than `Kp`. Adding small `Kd` did
+not help me. Than I realised that `D` component worked with rate of change of CTE that was much smaller than CTE itself. So I needed to have `Kd` bigger
+that `Kp`. I started with `Kd = 1` and got a significant improvement. Than I realised that `Kp` was not big enough as car clearly had problems in sharp turns.
+I increased `Kp` to `0.1` and got a quite nice trajectory of movement (though it had some troubles in sharp turns) as `D` parameter really helped me to mitigate 
+divergence. I started to further increse `Kd` and ended up with `Kd = 8.` (I tried bigger `Kd`s but it resulted in worse behaviour, trajectory of movement became 
+`nervous`/had spikes). At this moment car already met specifiacation (did not touch boundaries of lane of movement) so I decided to move to final step. Resulting 
+video of the second step is at `./video/PD_controller.mp4` (`Kp = 0.1, Kd = 8., Ki = 0.`).
+
+Third step was to add `I` component and implement `PID`-controller. As `I` component deals with sum of cross track errors I decided to search for a much smaller
+`Ki` (relative to `Kp` and `Kd`). I started with `Ki = 0.0005` and it gave me an improvement than I encreased `Ki` to `0.001` to have an even bigger improvent. At that
+moment I obtained a controller that seemed good enough for me so I decided to stop at that moment. I added the last tweak to decrease `Kd` to `6.` to have a little 
+smoother car movement. Resulting video of the final step is at `./video/PID_controller.mp4` (`Kp = 0.1, Kd = 6., Ki = 0.001`).
+
+---
+
 ## Dependencies
 
 * cmake >= 3.5
