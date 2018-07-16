@@ -41,7 +41,7 @@ a `P`-controller at first that move to `PD`-controller than to `PID`-controller.
 My first step was to implement a `P`-controller. I needed to find a balance between car's ability to take turns and trajectory divergence. I started with
 `Kp = 1` and got a car movement that diverged in a very fast manner. Then I started to decrease `Kp` and ended up with `Kp = 0.05`. With that parameter car 
 was able to pass first two turns than its trajectory diverged. At that moment I decided to move to the next step. Resulting video of the first step is
-at `./video/P_controller.mp4` (`Kp = 0.05, Kd = 0., Ki = 0.`).
+at [P_controller](https://youtu.be/gD2REJu88ds) (`Kp = 0.05, Kd = 0., Ki = 0.`).
 
 Second step was to add `D` component and implement `PD`-controller. At first I tried to find a `Kd` that was smaller than `Kp`. Adding small `Kd` did
 not help me. Than I realised that `D` component worked with rate of change of CTE that was much smaller than CTE itself. So I needed to have `Kd` bigger
@@ -49,12 +49,12 @@ that `Kp`. I started with `Kd = 1` and got a significant improvement. Than I rea
 I increased `Kp` to `0.1` and got a quite nice trajectory of movement (though it had some troubles in sharp turns) as `D` parameter really helped me to mitigate 
 divergence. I started to further increse `Kd` and ended up with `Kd = 8.` (I tried bigger `Kd`s but it resulted in worse behaviour, trajectory of movement became 
 `nervous`/had spikes). At this moment car already met specifiacation (did not touch boundaries of lane of movement) so I decided to move to final step. Resulting 
-video of the second step is at `./video/PD_controller.mp4` (`Kp = 0.1, Kd = 8., Ki = 0.`).
+video of the second step is at [PD_controller](https://youtu.be/_Ve2QOPF0Gs) (`Kp = 0.1, Kd = 8., Ki = 0.`).
 
 Third step was to add `I` component and implement `PID`-controller. As `I` component deals with sum of cross track errors I decided to search for a much smaller
 `Ki` (relative to `Kp` and `Kd`). I started with `Ki = 0.0005` and it gave me an improvement than I encreased `Ki` to `0.001` to have an even bigger improvent. At that
 moment I obtained a controller that seemed good enough for me so I decided to stop at that moment. I added the last tweak to decrease `Kd` to `6.` to have a little 
-smoother car movement. Resulting video of the final step is at `./video/PID_controller.mp4` (`Kp = 0.1, Kd = 6., Ki = 0.001`).
+smoother car movement. Resulting video of the final step is at [PID_controller](https://youtu.be/snor3RK8peQ) (`Kp = 0.1, Kd = 6., Ki = 0.001`).
 
 ---
 
